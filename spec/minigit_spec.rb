@@ -4,6 +4,7 @@ SimpleCov.start
 require_relative "../lib/file_service"
 require_relative "../lib/repo"
 require_relative "../lib/index"
+require_relative "../lib/commit"
 require_relative "../lib/commands"
 require "fileutils"
 
@@ -42,7 +43,7 @@ RSpec.describe "Minigit" do
     it "returns modified but not staged files" do
       Index.stage_file("file1.txt")
       # Commit file1.txt
-      FileService.generate_commit("abc123", Time.now.iso8601, "First commit")
+      Commit.create("abc123", Time.now.iso8601, "First commit")
       # Modify file1.txt
       File.open("file1.txt", "w") { |f| f.write("Changed content") }
       modified = FileService.get_modified_but_not_staged_files("abc123")
@@ -51,7 +52,7 @@ RSpec.describe "Minigit" do
 
     it "returns untracked files" do
       Index.stage_file("file1.txt")
-      FileService.generate_commit("abc123", Time.now.iso8601, "First commit")
+      Commit.create("abc123", Time.now.iso8601, "First commit")
       # file2.txt is untracked
       untracked = FileService.get_untracked_files("abc123")
       expect(untracked).to include("file2.txt")

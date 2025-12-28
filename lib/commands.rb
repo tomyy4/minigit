@@ -2,7 +2,7 @@ require_relative "file_service"
 require_relative "repo"
 require_relative "index"
 require_relative "head"
-
+require_relative "commit"
 require "time"
 
 
@@ -85,7 +85,7 @@ module Commands
     end 
     
     hex = md5.hexdigest
-    FileService.generate_commit(hex, current_time, message)
+    Commit.create(hex, current_time, message)
     puts "executing commit"
   end
 
@@ -102,7 +102,7 @@ module Commands
     parent_commit = nil
     meta_file = ".minigit/objects/#{commit}/meta"
 
-    meta = FileService.read_meta(meta_file)
+    meta = Commit.read_meta(meta_file)
     puts "commit #{meta[:commit]}"
     puts "parent #{meta[:parent]}"
     puts "message #{meta[:message]}"
