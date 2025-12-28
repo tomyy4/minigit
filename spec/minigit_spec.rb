@@ -3,6 +3,7 @@ SimpleCov.start
 
 require_relative "../lib/file_service"
 require_relative "../lib/repo"
+require_relative "../lib/index"
 require_relative "../lib/commands"
 require "fileutils"
 
@@ -33,13 +34,13 @@ RSpec.describe "Minigit" do
     end
 
     it "stages a file" do
-      FileService.stage_file("file1.txt")
-      staged_files = FileService.get_staged_files
+      Index.stage_file("file1.txt")
+      staged_files = Index.get_files
       expect(staged_files).to include("file1.txt")
     end
 
     it "returns modified but not staged files" do
-      FileService.stage_file("file1.txt")
+      Index.stage_file("file1.txt")
       # Commit file1.txt
       FileService.generate_commit("abc123", Time.now.iso8601, "First commit")
       # Modify file1.txt
@@ -49,7 +50,7 @@ RSpec.describe "Minigit" do
     end
 
     it "returns untracked files" do
-      FileService.stage_file("file1.txt")
+      Index.stage_file("file1.txt")
       FileService.generate_commit("abc123", Time.now.iso8601, "First commit")
       # file2.txt is untracked
       untracked = FileService.get_untracked_files("abc123")
@@ -59,7 +60,7 @@ RSpec.describe "Minigit" do
 
   describe "Commands" do
     it "commits staged files" do
-      FileService.stage_file("file1.txt")
+      Index.stage_file("file1.txt")
       Commands.commit_command("Initial commit")
       last_commit = FileService.get_parent_commit
       expect(last_commit).not_to be_nil
@@ -69,7 +70,7 @@ RSpec.describe "Minigit" do
     end
 
     it "logs commits" do
-      FileService.stage_file("file1.txt")
+      Index.stage_file("file1.txt")
       Commands.commit_command("First commit")
       expect { Commands.log_command }.to output(/commit/).to_stdout
     end

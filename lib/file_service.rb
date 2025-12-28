@@ -1,14 +1,8 @@
 require_relative "md5_generator"
+require_relative "index"
+
 
 module FileService
-  def self.index_file_is_empty?
-    File.zero?(".minigit/index")
-  end
-
-  def self.index_file_content
-    File.read(".minigit/index").to_s
-  end
-
   def self.read_meta(meta_file)
     commit = nil
     parent = nil
@@ -44,19 +38,6 @@ module FileService
     end
   end
 
-  def self.get_staged_files
-    path = ".minigit/index"
-    lines = File.readlines(path)
-  
-    # does this generate a string?
-    name_lines = lines.map do |line|
-      name, _ = line.strip.split(":")
-      name
-      end
-
-    name_lines
-  end
-
   def self.get_working_tree_files
     path = Dir.getwd
     files = []
@@ -76,7 +57,7 @@ module FileService
     end
 
     working_tree_files = self.get_working_tree_files
-    staged_files = self.get_staged_files
+    staged_files = Index.get_files
  
     files = []
     working_tree_files.each do |f|
@@ -99,7 +80,7 @@ module FileService
       committed_hashes[file] = Md5Generator.generate(content)
     end
 
-    staged_files = self.get_staged_files
+    staged_files = Index.get_files
     working_files = self.get_working_tree_files
   
     modified = []
@@ -148,14 +129,8 @@ module FileService
     end
   end
 
-  def self.clear_index_file
-    # after a successful commit, clear the index file to avoid commiting the same
-    # files everytime
-    File.open('.minigit/index', 'w') {|file| file.truncate(0) }
-  end
-
   def self.add_commited_files(commit_file_path)
-    self.get_staged_files.each do |file|
+    Index.get_files.each do |file|
       FileUtils.cp(file, commit_file_path)
     end
   end
@@ -186,60 +161,7 @@ module FileService
 
     self.add_commited_files(committed_files_path)
     self.generate_meta_file(commit_dir_path, hex, current_time, commit_message, parent_commit)
-    self.clear_index_file
+    Index.clear
     self.update_head_file(hex)
-  end
-
-  def self.find_staged_file_by_name(filename)
-    # convert this to block with do statement, 
-    file = File.open(".minigit/index", "r")
-    file.each do |line|
-      tracked_file = line.split(":")
-      if tracked_file[0] == filename
-        file.close
-        return line
-      end
-    end
-  
-    file.close
-  end
-  
-  def self.update_file_hash(filename, md5)  
-    # updates a staged file that follows this structure
-    # a_file.txt:any_hash  
-    path = ".minigit/index"
-    lines = File.readlines(path)
-  
-    # does this generate a string?
-    updated_lines = lines.map do |line|
-      name, _ = line.strip.split(":")
-      if name == filename
-        "#{name}:#{md5}\n"
-      else
-        line
-      end
-    end
-  
-    File.write(path, updated_lines.join)
-  end
-
-  def self.stage_file(filename)
-    path = ".minigit/index"
-    possible_staged_file = find_staged_file_by_name(filename)
-    content = File.read(filename)
-    md5 = Md5Generator.generate content.to_s
-    if not possible_staged_file
-      # Generate md5 hash and add to the staging area
-      File.write(path, "#{filename}:#{md5}\n", mode: "a+")
-    else
-      # If the file is in the stage area, check the file has been updated vy checking its md5
-      prev_md5 = possible_staged_file.split(":")[1].chomp
-
-      if prev_md5.eql?(md5)
-        puts "The file has no changes"
-      else
-        update_file_hash(filename, md5)
-      end
-    end
   end
 end

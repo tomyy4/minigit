@@ -1,5 +1,7 @@
 require_relative "file_service"
 require_relative "repo"
+require_relative "index"
+
 require "time"
 
 
@@ -57,7 +59,7 @@ module Commands
       return
     end
 
-    if FileService.index_file_is_empty?
+    if Index.is_empty?
       puts "No files staged to be commited"
       return
     end
@@ -75,7 +77,7 @@ module Commands
     # generate md5 from iso time, index content, commit message and parent commit if provided
     md5 = Digest::MD5.new
     current_time = Time.now.iso8601
-    strings = [message, current_time, FileService.index_file_content]
+    strings = [message, current_time, Index.content]
 
     strings.each do |str|
       md5.update(str)
