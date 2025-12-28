@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require_relative "../lib/file_service"
 require_relative "../lib/commands"
 require "fileutils"
