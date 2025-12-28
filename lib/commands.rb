@@ -1,21 +1,22 @@
 require_relative "file_service"
+require_relative "repo"
 require "time"
 
 
 module Commands
   def self.init_command
-    if FileService.minigit_exists
+    if Repo.exists?
       puts "Repo already initialized"
-      return
+      return  
     end
     
     # move this to file service
-    FileService.init_minigit
+    Repo.init
     puts ".minidigit directory created"
   end
-  
+
   def self.add_command(args)
-    if not FileService.minigit_exists
+    if not Repo.exists?
       puts ".minigit not initialized"
       return
     end
@@ -51,7 +52,7 @@ module Commands
     # parent: <parent_commit_id | none>
     # date: <ISO timestamp>
     # message: <mensaje>
-    if not FileService.minigit_exists
+    if not Repo.exists?
       puts "minigit not initialized"
       return
     end

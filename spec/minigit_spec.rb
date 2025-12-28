@@ -2,6 +2,7 @@ require 'simplecov'
 SimpleCov.start
 
 require_relative "../lib/file_service"
+require_relative "../lib/repo"
 require_relative "../lib/commands"
 require "fileutils"
 
@@ -28,7 +29,7 @@ RSpec.describe "Minigit" do
 
   describe "FileService" do
     it "detects that .minigit exists" do
-      expect(FileService.minigit_exists).to eq(true)
+      expect(Repo.exists?).to eq(true)
     end
 
     it "stages a file" do

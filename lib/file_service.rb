@@ -1,17 +1,6 @@
 require_relative "md5_generator"
 
 module FileService
-  def self.minigit_exists
-    File.directory?(".minigit")
-  end
-
-  def self.init_minigit
-    Dir.mkdir ".minigit"
-    Dir.mkdir ".minigit/objects"
-    FileUtils.touch ".minigit/index"
-    FileUtils.touch ".minigit/HEAD"
-  end
-  
   def self.index_file_is_empty?
     File.zero?(".minigit/index")
   end
