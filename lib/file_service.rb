@@ -103,8 +103,8 @@ module FileService
       committed_hashes[file] = Md5Generator.generate(content)
     end
 
-    staged_files = get_staged_files
-    working_files = get_working_tree_files
+    staged_files = self.get_staged_files
+    working_files = self.get_working_tree_files
   
     modified = []
   
