@@ -1,6 +1,5 @@
 require_relative "file_service"
 require "time"
-require "fileutils"
 
 
 module Commands
@@ -11,10 +10,7 @@ module Commands
     end
     
     # move this to file service
-    Dir.mkdir ".minigit"
-    Dir.mkdir ".minigit/objects"
-    FileUtils.touch ".minigit/index"
-    FileUtils.touch ".minigit/HEAD"
+    FileService.init_minigit
     puts ".minidigit directory created"
   end
   
@@ -138,5 +134,9 @@ module Commands
     untracked_files.each do |f|
       puts "- #{f}"
     end
+  end
+
+  def self.push_command
+    
   end
 end
