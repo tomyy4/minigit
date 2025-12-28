@@ -1,6 +1,6 @@
-# minigit 🐙
+# minigit
 
-`minigit` is a simplified Git-like version control system written in Ruby for educational and portfolio purposes.
+`minigit` is a simplified Git-like version control system written in Ruby for educational purposes.
 
 The goal of this project is to deeply understand how Git works internally:  
 staging area, commits, snapshots, hashing, and state comparison between the working tree, index, and last commit.
