@@ -1,5 +1,6 @@
 require_relative "md5_generator"
 require_relative "index"
+require_relative "head"
 
 
 module FileService
@@ -95,17 +96,6 @@ module FileService
   
     modified
   end
-
-  def self.get_parent_commit
-    # look inside head file, get the hash -> parent commit
-    head_file = ".minigit/HEAD"
-    if File.zero?(head_file)
-      return nil 
-    end
-
-    hash = File.open(head_file) {|f| f.readline.chomp}
-    hash
-  end
   
   def self.generate_meta_file(
     commit_dir_path, 
@@ -120,12 +110,6 @@ module FileService
       f.write("parent: #{parent_commit}\n")
       f.write("date: #{current_time}\n")
       f.write("message: #{commit_message}")
-    end
-  end
-
-  def self.update_head_file(hex)
-    File.open(".minigit/HEAD", "w") do |f|
-      f.write(hex)
     end
   end
 
@@ -153,7 +137,7 @@ module FileService
 
     # create the specific meta file
     FileUtils.touch "#{commit_dir_path}/meta"
-    parent_commit = self.get_parent_commit
+    parent_commit = Head.get_parent_commit
 
     if not parent_commit
       parent_commit = "none"
@@ -162,6 +146,6 @@ module FileService
     self.add_commited_files(committed_files_path)
     self.generate_meta_file(commit_dir_path, hex, current_time, commit_message, parent_commit)
     Index.clear
-    self.update_head_file(hex)
+    Head.update(hex)
   end
 end

@@ -1,6 +1,7 @@
 require_relative "file_service"
 require_relative "repo"
 require_relative "index"
+require_relative "head"
 
 require "time"
 
@@ -33,7 +34,7 @@ module Commands
         puts "Fatal: file #{filename} does not exist"
         return
       else
-        FileService.stage_file(filename)
+        Index.stage_file(filename)
       end
     end
   end
@@ -90,7 +91,7 @@ module Commands
 
   def self.log_command(parent_commit = nil)    
     if not parent_commit
-      commit = FileService.get_parent_commit
+      commit = Head.get_parent_commit
     else
       commit = parent_commit
     end
@@ -118,15 +119,14 @@ module Commands
   end
 
   def self.status_command
-    last_commit = FileService.get_parent_commit
+    last_commit = Head.get_parent_commit
 
-    staged_files = FileService.get_staged_files
+    staged_files = Index.get_files
     puts "Staged files:"
     staged_files.each do |f|
       puts "- #{f}"
     end
     puts
-    last_commit = FileService.get_parent_commit
     puts "Modified but not staged:"
     FileService.get_modified_but_not_staged_files(last_commit).each do |f|
       puts "- #{f}"

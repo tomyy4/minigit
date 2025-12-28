@@ -62,7 +62,7 @@ RSpec.describe "Minigit" do
     it "commits staged files" do
       Index.stage_file("file1.txt")
       Commands.commit_command("Initial commit")
-      last_commit = FileService.get_parent_commit
+      last_commit = Head.get_parent_commit
       expect(last_commit).not_to be_nil
       # Check files exist in commit folder
       commit_dir = ".minigit/objects/#{last_commit}/files"
